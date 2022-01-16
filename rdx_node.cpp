@@ -4,13 +4,13 @@
 namespace RadixTree {
     struct rdx_node {
         std::string label;
-        bool isEndofWord;
-        std::vector <rdx_node> subNodes;
-        rdx_node(): label(""), isEndofWord(false) {
-            subNodes.clear();
+        bool is_end_of_node;
+        std::vector <rdx_node> sub_nodes;
+        rdx_node(): label(""), is_end_of_node(false) {
+            sub_nodes.clear();
         }
-        rdx_node(std::string _label): label(_label), isEndofWord(false) {
-            subNodes.clear();
+        rdx_node(std::string _label): label(_label), is_end_of_node(false) {
+            sub_nodes.clear();
         }
     };
 }
