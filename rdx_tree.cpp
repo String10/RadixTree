@@ -13,6 +13,7 @@ namespace RadixTree {
         size_t matchingConsecutiveCharacter(const std::string &word, size_t offset, const rdx_node &node);
         void insertRec(const std::string &word, size_t offset, rdx_node &node);
         bool lookupRec(const std::string &word, size_t offset, const rdx_node &node);
+        void removeRec(const std::string &word, size_t offset, rdx_node &node);
     };
 
     rdx_tree::rdx_tree(): root() {}
@@ -132,7 +133,7 @@ namespace RadixTree {
              * node.label:  |----matches----|
              * 
              */
-            return true;
+            return node.is_end_of_node;
         }
         else {
             /**
@@ -143,6 +144,56 @@ namespace RadixTree {
              * 
              */
             return false;
+        }
+    }
+    void rdx_tree::remove(const std::string &word) {
+        removeRec(word, 0, root);
+    }
+    void rdx_tree::removeRec(const std::string &word, size_t offset, rdx_node &node) {
+        static size_t matches;
+        matches = matchingConsecutiveCharacter(word, offset, node);
+        if((matches == 0) || (matches > 0 && offset + matches < word.length() && matches >= node.label.length())) {
+            /**
+             * @brief case 0:
+             * 
+             * word_part:   |----matches----|-------------|
+             * node.label:  |----matches----|
+             * 
+             */
+            offset += matches;
+            for(auto &sub_node: node.sub_nodes) {
+                if(sub_node.label[0] == word[offset]) {
+                    removeRec(word, offset, sub_node);
+                }
+            }
+        }
+        else if(offset + matches >= word.length() && matches < node.label.length()) {
+            /**
+             * @brief case 1:
+             * 
+             * word_part:   |----matches----|
+             * node.label:  |----matches----|-------------|
+             * 
+             */
+        }
+        else if(offset + matches >= word.length() && matches == node.label.length()) {
+            /**
+             * @brief case 2:
+             * 
+             * word_part:   |----matches----|
+             * node.label:  |----matches----|
+             * 
+             */
+            node.is_end_of_node = false;
+        }
+        else {
+            /**
+             * @brief case 3:
+             * 
+             * word_part:   |----matches----|-------------|
+             * node.label:  |----matches----|-------------|
+             * 
+             */
         }
     }
 }
