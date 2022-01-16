@@ -9,8 +9,10 @@ namespace RadixTree {
         void remove(const std::string &word);
     private:
         rdx_node root;
-        void insertRec(const std::string &word, size_t offset, rdx_node &node);
+
         size_t matchingConsecutiveCharacter(const std::string &word, size_t offset, const rdx_node &node);
+        void insertRec(const std::string &word, size_t offset, rdx_node &node);
+        bool lookupRec(const std::string &word, size_t offset, const rdx_node &node);
     };
 
     rdx_tree::rdx_tree(): root() {}
@@ -89,5 +91,58 @@ namespace RadixTree {
             }
         }
         return matches;
+    }
+    bool rdx_tree::lookup(const std::string &word) {
+        return lookupRec(word, 0, root);
+    }
+    bool rdx_tree::lookupRec(const std::string &word, size_t offset, const rdx_node &node) {
+        static size_t matches;
+        matches = matchingConsecutiveCharacter(word, offset, node);
+        if((matches == 0) || (matches > 0 && offset + matches < word.length() && matches >= node.label.length())) {
+            /**
+             * @brief case 0:
+             * 
+             * word_part:   |----matches----|-------------|
+             * node.label:  |----matches----|
+             * 
+             */
+            offset += matches;
+            for(auto &sub_node: node.sub_nodes) {
+                if(sub_node.label[0] == word[offset]) {
+                    return lookupRec(word, offset, sub_node);
+                }
+            }
+            return false;
+        }
+        else if(offset + matches >= word.length() && matches < node.label.length()) {
+            /**
+             * @brief case 1:
+             * 
+             * word_part:   |----matches----|
+             * node.label:  |----matches----|-------------|
+             * 
+             */
+            return false;
+        }
+        else if(offset + matches >= word.length() && matches == node.label.length()) {
+            /**
+             * @brief case 2:
+             * 
+             * word_part:   |----matches----|
+             * node.label:  |----matches----|
+             * 
+             */
+            return true;
+        }
+        else {
+            /**
+             * @brief case 3:
+             * 
+             * word_part:   |----matches----|-------------|
+             * node.label:  |----matches----|-------------|
+             * 
+             */
+            return false;
+        }
     }
 }

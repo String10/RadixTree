@@ -6,11 +6,27 @@ using namespace std;
 int main() {
     RadixTree::rdx_tree rdx_tree;
     
-    rdx_tree.insert("abcd");
-    rdx_tree.insert("ab");
-    rdx_tree.insert("cd");
-    rdx_tree.insert("cd");
-    rdx_tree.insert("abcddd");
-    rdx_tree.insert("celll");
-    rdx_tree.insert("k");
+    string insert_strs[] = {
+        "sasdkj",
+        "aasuab",
+        "IasNJCjn",
+        "3ja8sdh",
+        "3jass",
+        "aaasdsd"
+    };
+    string lookup_strs[] = {
+        "sasdkj", // True
+        "aasuab", // True
+        "IasNJCjn", // True
+        "3ja**dh", // False
+        "aiss", // False
+        "aaasdsd" // True
+    };
+    int size = 6;
+    for(int i = 0; i < size; i++) {
+        rdx_tree.insert(insert_strs[i]);
+    }
+    for(int i = 0; i < size; i++) {
+        cout << (rdx_tree.lookup(lookup_strs[i]) ? "True" : "False") << endl;
+    }
 }
