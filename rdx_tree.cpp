@@ -7,6 +7,8 @@ namespace RadixTree {
         void insert(const std::string &word);
         bool lookup(const std::string &word);
         void remove(const std::string &word);
+        std::string findSuccessor(const std::string &word);
+        std::string findPredecessor(const std::string &word);
     private:
         rdx_node root;
 
@@ -14,6 +16,8 @@ namespace RadixTree {
         void insertRec(const std::string &word, size_t offset, rdx_node &node);
         bool lookupRec(const std::string &word, size_t offset, const rdx_node &node);
         void removeRec(const std::string &word, size_t offset, rdx_node &node);
+        std::string findSuccessorRec(const std::string &word, size_t offset, const rdx_node &node, const std::string &carry);
+        std::string findPredecessorRec(const std::string &word, size_t offset, const rdx_node &node, const std::string &carry);
     };
 
     rdx_tree::rdx_tree(): root() {}
@@ -195,5 +199,13 @@ namespace RadixTree {
              * 
              */
         }
+    }
+    std::string rdx_tree::findSuccessor(const std::string &word) {
+        static std::string carry;
+        carry.clear();
+        return findSuccessorRec(word, 0, root, carry);
+    }
+    std::string rdx_tree::findSuccessorRec(const std::string &word, size_t offset, const rdx_node &node, const std::string &carry) {
+        /* TODO: Finish it. */
     }
 }
