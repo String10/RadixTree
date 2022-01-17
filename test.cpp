@@ -1,6 +1,6 @@
 #include "rdx_tree.cpp"
 
-#define TEST_BENCHMARK
+#define TEST_INSERT_LOOKUP_REMOVE
 
 #include <iostream>
 #include <fstream>
@@ -189,7 +189,7 @@ int main() {
     ofstream logger("log_1.txt");
 
     logger << "Test Finished!" << endl;
-    logger << "rdx_tree costs: " << rdx_tree_end - rdx_tree_start << "ms" << endl;
     logger << "check_helper costs: " << check_helper_end - check_helper_start << "ms" << endl;
+    logger << "rdx_tree costs: " << rdx_tree_end - rdx_tree_start << "ms" << endl;
 #endif // TEST_BENCHMARK
 }
