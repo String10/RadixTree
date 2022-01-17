@@ -1,6 +1,7 @@
 #include "rdx_tree.cpp"
 
 #define TEST_FINDSUCCESSOR
+#define TEST_FINDSUCCESSOR_AUTO
 
 #include <iostream>
 #include <fstream>
@@ -128,6 +129,21 @@ int main() {
             cout << "Ckr: " << checker << endl;
         }
     }
+    /*
+    Real-time Content:
+        #abcc
+        #abccd
+        #bcvsd 
+        > #lask
+        > #njnj
+        #lasddfdf
+        > !njnj
+        > !lask
+        #lassk
+        #njn
+
+        >> jn
+    */
 #endif // TEST_FINDSUCCESSOR_INPUT
 #endif // TEST_FINDSUCCESSOR
 #ifdef TEST_BENCHMARK

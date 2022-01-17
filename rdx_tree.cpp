@@ -93,6 +93,7 @@ namespace RadixTree {
             p_new_node->sub_nodes.swap(node->sub_nodes);
 
             node->label = node->label.substr(0, matches);
+            node->is_end_of_node = false;
             node->sub_nodes[p_new_node->label[0]] = p_new_node;
 
             p_new_node = new rdx_node(word.substr(offset + matches, word.length()));
