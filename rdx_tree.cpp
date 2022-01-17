@@ -317,4 +317,15 @@ namespace RadixTree {
         }
         return "";
     }
+    std::string rdx_tree::findPredecessor(const std::string &word) {
+        return findPredecessorRec(word, 0, root);
+    }
+    std::string rdx_tree::findPredecessorRec(const std::string &word, size_t offset, const rdx_node *node) {
+        /* TODO: Finish fdPredecessor. */
+        return "";
+    }
+    std::string rdx_tree::getMaxSuffix(const rdx_node *node) {
+        /* TODO: Finish getMaxSUff. */
+        return "";
+    }
 }
