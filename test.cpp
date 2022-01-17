@@ -93,10 +93,12 @@ int main() {
     RadixTree::rdx_tree rdx_tree;
     set <string> check_helper;
 
-    ofstream of_data("data.txt");
-    
     constexpr size_t inserts = 1e4, lookups = 1e4, removes = 5e3;
     string word;
+
+#ifdef TEST_BENCHMARK_MAKEDATA
+    ofstream of_data("data.txt");
+    
     for(int i = 0; i < inserts; i++) {
         word = getRandomString();
         // rdx_tree.insert(word), check_helper.insert(word);
@@ -137,10 +139,32 @@ int main() {
     }
 
     of_data.close();
+#endif // TEST_BENCHMARK_MAKEDATA
 
     ifstream if_data("data.txt");
 
     check_helper.clear();
+
+    time_t check_helper_start = clock();
+
+    for(int i = 0; i < inserts; i++) {
+        if_data >> word;
+        check_helper.insert(word);
+    }
+    for(int i = 0; i < lookups; i++) {
+        if_data >> word;
+        check_helper.count(word);
+    }
+
+    for(int i = 0; i < removes; i++) {
+        if_data >> word;
+        check_helper.erase(word);
+    }
+    
+    time_t check_helper_end = clock();
+    
+
+    if_data.open("data.txt");
 
     time_t rdx_tree_start = clock();
 
@@ -160,28 +184,9 @@ int main() {
 
     time_t rdx_tree_end = clock();
 
-    if_data.open("data.txt");
-    time_t check_helper_start = clock();
-
-    for(int i = 0; i < inserts; i++) {
-        if_data >> word;
-        check_helper.insert(word);
-    }
-    for(int i = 0; i < lookups; i++) {
-        if_data >> word;
-        check_helper.count(word);
-    }
-
-    for(int i = 0; i < removes; i++) {
-        if_data >> word;
-        check_helper.erase(word);
-    }
-    
-    time_t check_helper_end = clock();
-
     if_data.close();
 
-    ofstream logger("log_0.txt");
+    ofstream logger("log_1.txt");
 
     logger << "Test Finished!" << endl;
     logger << "rdx_tree costs: " << rdx_tree_end - rdx_tree_start << "ms" << endl;
