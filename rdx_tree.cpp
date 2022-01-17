@@ -213,9 +213,6 @@ namespace RadixTree {
         return findSuccessorRec(word, 0, root);
     }
     std::string rdx_tree::findSuccessorRec(const std::string &word, size_t offset, const rdx_node *node) {
-        // FIXME: Input "aabbbbb", should return "aad", but gets "".
-        // The bug raises when finding the min-sub-node of the node, if the one didn't got a valid word,
-        // the program won't continue to find the second-min-sub-node, but return "".
         static size_t matches;
         matches = matchingConsecutiveCharacter(word, offset, node);
         if((matches == 0) || (matches > 0 && offset + matches < word.length() && matches >= node->label.length())) {
