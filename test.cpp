@@ -1,6 +1,6 @@
 #include "rdx_tree.cpp"
 
-#define TEST_BENCHMARK
+#define TEST_FINDSUCCESSOR
 
 #include <iostream>
 #include <fstream>
@@ -23,8 +23,8 @@ string getRandomString() {
 }
 
 int main() {
-#ifdef TEST_INSERT_LOOKUP_REMOVE
     srand(time(NULL));
+#ifdef TEST_INSERT_LOOKUP_REMOVE
 
     RadixTree::rdx_tree rdx_tree;
     set <string> check_helper;
@@ -68,24 +68,67 @@ int main() {
 #endif // TEST_INSERT_LOOKUP_REMOVE
 #ifdef TEST_FINDSUCCESSOR
     RadixTree::rdx_tree rdx_tree;
+    set <string> check_helper;
 
-    rdx_tree.insert("aa");
-    rdx_tree.insert("aaa");
-    rdx_tree.insert("aac");
-    rdx_tree.insert("aabbbbb");
-    rdx_tree.insert("aad");
-    rdx_tree.remove("aac");
-    /*
-        Now rdx_tree:
-            aa
-            aaa
-            aabbbbb
-            aad
-    */
     string word;
-    while(cin >> word) {
-        cout << rdx_tree.findSuccessor(word) << endl;
+#ifdef TEST_FINDSUCCESSOR_AUTO
+    constexpr size_t checks = 1e3;
+
+    for(size_t i = 0; i < checks; i++) {
+        word = getRandomString();
+        if(0 == rand() % 5) {
+            // insert
+            rdx_tree.insert(word);
+            check_helper.insert(word);
+        }
+        else if(0 == rand() % 4) {
+            // delete
+            for(auto &_word: check_helper) {
+                if(0 == rand() % 3) {
+                    word = _word;
+                }
+            }
+            rdx_tree.remove(word);
+            check_helper.erase(word);
+        }
+        else {
+            string checker;
+            for(auto &_word: check_helper) {
+                if(_word > word) {
+                    checker = _word;
+                    break;
+                }
+            }
+            if(checker != rdx_tree.findSuccessor(word)) {
+                cout << "Test Failed!" << endl;
+            }
+        }
     }
+#else // TEST_FINDSUCCESSOR_INPUT
+    while(cin >> word) {
+        // cout << rdx_tree.findSuccessor(word) << endl;
+        if(word[0] == '#') {
+            rdx_tree.insert(word.substr(1, word.length()));
+            check_helper.insert(word.substr(1, word.length()));
+        }
+        else if(word[0] == '!') {
+            rdx_tree.remove(word.substr(1, word.length()));
+            check_helper.erase(word.substr(1, word.length()));
+        }
+        else {
+            cout << "Rdx: " << rdx_tree.findSuccessor(word) << endl;
+            string checker;
+            for(auto &_word: check_helper) {
+                if(_word > word) {
+                    // cout << "Ckr: " << _word << endl;
+                    checker = _word;
+                    break;
+                }
+            }
+            cout << "Ckr: " << checker << endl;
+        }
+    }
+#endif // TEST_FINDSUCCESSOR_INPUT
 #endif // TEST_FINDSUCCESSOR
 #ifdef TEST_BENCHMARK
     srand(time(NULL));
