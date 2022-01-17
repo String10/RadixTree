@@ -1,5 +1,7 @@
 #include "rdx_tree.cpp"
 
+#define TEST_FINDSUCCESSOR
+
 #include <iostream>
 #include <set>
 #include <cstdlib>
@@ -20,6 +22,7 @@ string getRandomString() {
 }
 
 int main() {
+#ifdef TEST_INSERT_LOOKUP_REMOVE
     srand(time(NULL));
 
     RadixTree::rdx_tree rdx_tree;
@@ -61,4 +64,26 @@ int main() {
         }
     }
     cout << "Test Finished!" << endl;
+#endif // TEST_INSERT_LOOKUP_REMOVE
+#ifdef TEST_FINDSUCCESSOR
+    RadixTree::rdx_tree rdx_tree;
+
+    rdx_tree.insert("aa");
+    rdx_tree.insert("aaa");
+    rdx_tree.insert("aac");
+    rdx_tree.insert("aabbbbb");
+    rdx_tree.insert("aad");
+    rdx_tree.remove("aac");
+    /*
+        Now rdx_tree:
+            aa
+            aaa
+            aabbbbb
+            aad
+    */
+    string word;
+    while(cin >> word) {
+        cout << rdx_tree.findSuccessor(word) << endl;
+    }
+#endif // TEST_FINDSUCCESSOR
 }

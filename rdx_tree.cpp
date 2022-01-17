@@ -16,8 +16,8 @@ namespace RadixTree {
         void insertRec(const std::string &word, size_t offset, rdx_node &node);
         bool lookupRec(const std::string &word, size_t offset, const rdx_node &node);
         void removeRec(const std::string &word, size_t offset, rdx_node &node);
-        std::string findSuccessorRec(const std::string &word, size_t offset, const rdx_node &node, const std::string &carry);
-        std::string findPredecessorRec(const std::string &word, size_t offset, const rdx_node &node, const std::string &carry);
+        std::string findSuccessorRec(const std::string &word, size_t offset, const rdx_node &node);
+        std::string findPredecessorRec(const std::string &word, size_t offset, const rdx_node &node);
     };
 
     rdx_tree::rdx_tree(): root() {}
@@ -201,11 +201,146 @@ namespace RadixTree {
         }
     }
     std::string rdx_tree::findSuccessor(const std::string &word) {
-        static std::string carry;
-        carry.clear();
-        return findSuccessorRec(word, 0, root, carry);
+        return findSuccessorRec(word, 0, root);
     }
-    std::string rdx_tree::findSuccessorRec(const std::string &word, size_t offset, const rdx_node &node, const std::string &carry) {
-        /* TODO: Finish it. */
+    std::string rdx_tree::findSuccessorRec(const std::string &word, size_t offset, const rdx_node &node) {
+        static size_t matches;
+        matches = matchingConsecutiveCharacter(word, offset, node);
+        if((matches == 0) || (matches > 0 && offset + matches < word.length() && matches >= node.label.length())) {
+            /**
+             * @brief case 0:
+             * 
+             * word_part:   |----matches----|-------------|
+             * node.label:  |----matches----|
+             * 
+             */
+            offset += matches;
+            const rdx_node *p_min_node = nullptr;
+            for(auto &sub_node: node.sub_nodes) {
+                if(sub_node.label[0] == word[offset]) {
+                    std::string ret = findSuccessorRec(word, offset, sub_node);
+                    if(ret != "") {
+                        return ret;
+                    }
+                }
+                if(sub_node.label[0] > word[offset]) {
+                    if(p_min_node == nullptr || p_min_node->label[0] > sub_node.label[0]) {
+                        p_min_node = &sub_node;
+                    }
+                }
+            }
+            if(p_min_node == nullptr) {
+                return "";
+            }
+            else {
+                std::string successor = word.substr(0, offset);
+                while(p_min_node != nullptr) {
+                    successor.append(p_min_node->label);
+                    if(p_min_node->is_end_of_node) {
+                        return successor;
+                    }
+                    const rdx_node *p_min_sub_node = nullptr;
+                    for(auto &sub_node: p_min_node->sub_nodes) {
+                        if(p_min_sub_node == nullptr || p_min_sub_node->label[0] > sub_node.label[0]) {
+                            p_min_sub_node = &sub_node;
+                        }
+                    }
+                    p_min_node = p_min_sub_node;
+                }
+                return "";
+            }
+        }
+        else if(offset + matches >= word.length() && matches < node.label.length()) {
+            /**
+             * @brief case 1:
+             * 
+             * word_part:   |----matches----|
+             * node.label:  |----matches----|-------------|
+             * 
+             */
+            // return word.substr(0, offset) + node.label;
+            const rdx_node *p_min_node = &node;
+            std::string successor = word.substr(0, offset);
+            while(p_min_node != nullptr) {
+                successor.append(p_min_node->label);
+                if(p_min_node->is_end_of_node) {
+                    return successor;
+                }
+                const rdx_node *p_min_sub_node = nullptr;
+                for(auto &sub_node: p_min_node->sub_nodes) {
+                    if(p_min_sub_node == nullptr || p_min_sub_node->label[0] > sub_node.label[0]) {
+                        p_min_sub_node = &sub_node;
+                    }
+                }
+                p_min_node = p_min_sub_node;
+            }
+            return "";
+        }
+        else if(offset + matches >= word.length() && matches == node.label.length()) {
+            /**
+             * @brief case 2:
+             * 
+             * word_part:   |----matches----|
+             * node.label:  |----matches----|
+             * 
+             */
+            const rdx_node *p_min_node = nullptr;
+            for(auto &sub_node: node.sub_nodes) {
+                if(p_min_node == nullptr || p_min_node->label[0] > sub_node.label[0]) {
+                    p_min_node = &sub_node;
+                }
+            }
+            if(p_min_node == nullptr) {
+                return "";
+            }
+            else {
+                std::string successor = word;
+                while(p_min_node != nullptr) {
+                    successor.append(p_min_node->label);
+                    if(p_min_node->is_end_of_node) {
+                        return successor;
+                    }
+                    const rdx_node *p_min_sub_node = nullptr;
+                    for(auto &sub_node: p_min_node->sub_nodes) {
+                        if(p_min_sub_node == nullptr || p_min_sub_node->label[0] > sub_node.label[0]) {
+                            p_min_sub_node = &sub_node;
+                        }
+                    }
+                    p_min_node = p_min_sub_node;
+                }
+                return "";
+            }
+        }
+        else {
+            /**
+             * @brief case 3:
+             * 
+             * word_part:   |----matches----|-------------|
+             * node.label:  |----matches----|-------------|
+             * 
+             */
+            if(node.label[matches] < word[offset + matches]) {
+                return "";
+            }
+            else {
+                // return word.substr(0, offset) + node.label;
+                const rdx_node *p_min_node = &node;
+                std::string successor = word.substr(0, offset);
+                while(p_min_node != nullptr) {
+                    successor.append(p_min_node->label);
+                    if(p_min_node->is_end_of_node) {
+                        return successor;
+                    }
+                    const rdx_node *p_min_sub_node = nullptr;
+                    for(auto &sub_node: p_min_node->sub_nodes) {
+                        if(p_min_sub_node == nullptr || p_min_sub_node->label[0] > sub_node.label[0]) {
+                            p_min_sub_node = &sub_node;
+                        }
+                    }
+                    p_min_node = p_min_sub_node;
+                }
+                return "";
+            }
+        }
     }
 }
